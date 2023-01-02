@@ -1,76 +1,74 @@
 class Skiplist {
-
-    private ListNode head;
-    private int size;
+    class Node {
+        int val;
+        Node next, down;
+        public Node(int val, Node next, Node down) {
+            this.val = val;
+            this.next = next;
+            this.down = down;
+        }
+    }
+    Node head = new Node(-1, null, null);
+    Random rand = new Random();
     public Skiplist() {
-        this.head=new ListNode();
-        this.size=0;
+        
     }
     
     public boolean search(int target) {
+        Node cur = head;
+        while (cur.next != null && cur.next.val < target) {
+            cur = cur.next;
+        }
+        if (cur.next != null && cur.next.val == target) return true;
+        cur = cur.down;
         
-      ListNode node=this.head.next;
-      while(node!=null){
-        if(node.val==target)
-          return true;
-        node=node.next;
-      }
-      
-      return false;
+        return false;
     }
     
     public void add(int num) {
+        Stack<Node> stack = new Stack<>();
+        Node cur = head;
+        while (cur.next != null && cur.next.val < num) {
+            cur = cur.next;
+        }
+        stack.push(cur);
+        cur = cur.down;
         
-      this.size++;
-      ListNode node=this.head.next;
-      if(node==null){
-        this.head.next=new ListNode(num);
-        return;
-      }
-        
-      while(node.next!=null){ 
-        node=node.next;
-      }
-      node.next=new ListNode(num);
+        boolean insert = true;
+        Node down = null;
+        while (insert && !stack.isEmpty()) {
+            cur = stack.pop();
+            cur.next = new Node(num, cur.next, down);
+            down = cur.next;
+            insert = rand.nextDouble() < 0.5;
+        }
+        if (insert) {
+            Node newh = new Node(-1, null, null);
+            newh.down = head;
+        } 
     }
     
     public boolean erase(int num) {
+        Node cur = head;
+        boolean found = false;
+       
+        while (cur.next != null && cur.next.val < num) {
+            cur = cur.next;
+        }
+        if (cur.next != null && cur.next.val == num) {
+            found = true;
+            cur.next = cur.next.next;
+        }
+        cur = cur.down;
         
-      ListNode node=this.head.next;
-      if(node==null){
-        return false;
-      }
-      
-      if( num==node.val){
-        this.head.next=this.head.next.next;
-        this.size--;
-        return true;
-      }
-        
-      while(node.next!=null && node.next.next!=null){
-        if(node.next.val==num)
-          break;
-        node=node.next;
-      }
-      if(node.next!=null && node.next.next!=null){
-        node.next=node.next.next;
-        this.size--;
-        return true;
-      } 
-      if(node.next!=null && node.next.val==num){
-        node.next=null;
-        this.size--;
-        return true;
-      }
-        
-      return false;
+        return found;
     }
 }
-class ListNode {
-  public int val;
-  public ListNode next;
-  public ListNode(){}
-  public ListNode(int val){
-    this.val=val;
-  }
-}
+
+/**
+ * Your Skiplist object will be instantiated and called as such:
+ * Skiplist obj = new Skiplist();
+ * boolean param_1 = obj.search(target);
+ * obj.add(num);
+ * boolean param_3 = obj.erase(num);
+ **/
