@@ -1,10 +1,14 @@
 class Solution {
     public char findTheDifference(String s, String t) {
-        char x = 0;
-        String str = s.concat(t);
-        for(int i=0; i<str.length(); i++){
-            x ^= str.charAt(i);
+        byte[] sb = s.getBytes();
+        byte[] tb = t.getBytes();
+        byte acc = 0;
+
+        final int n = sb.length;
+        for (int i = 0; i < n; ++i) {
+            acc ^= sb[i] ^ tb[i];
         }
-        return x;
+        acc ^= tb[n];
+        return (char) acc;
     }
 }
