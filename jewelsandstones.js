@@ -28,5 +28,4 @@ var numJewelsInStones = function (J, S) {
     .filter(stone => distinctStones.indexOf(stone) > -1)
     .map(stone => 0 + 1)
     .reduce((acc, score) => acc + score, 0);
-
 };
